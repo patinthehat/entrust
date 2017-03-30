@@ -8,9 +8,9 @@
  * @package Zizaco\Entrust
  */
 
-use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Cache\TaggableStore;
 use InvalidArgumentException;
 
 trait EntrustUserTrait
@@ -20,35 +20,33 @@ trait EntrustUserTrait
     {
         $userPrimaryKey = $this->primaryKey;
         $cacheKey = 'entrust_roles_for_user_'.$this->$userPrimaryKey;
-        if(Cache::getStore() instanceof TaggableStore) {
-            return Cache::tags(Config::get('entrust.role_user_table'))->remember($cacheKey, Config::get('cache.ttl'), function () {
-                return $this->roles()->get();
-            });
-        }
-        else return $this->roles()->get();
+        //return Cache::tags(Config::get('entrust.role_user_table'))->remember($cacheKey, Config::get('cache.ttl'), function () {
+        return Cache::remember($cacheKey, Config::get('entrust.cache_ttl'), function () {
+            return $this->roles()->get();
+        });
     }
     public function save(array $options = [])
     {   //both inserts and updates
-        if(Cache::getStore() instanceof TaggableStore) {
+        parent::save($options);
+        if (Cache::getStore() instanceof TaggableStore) {
             Cache::tags(Config::get('entrust.role_user_table'))->flush();
         }
-        return parent::save($options);
     }
     public function delete(array $options = [])
     {   //soft or hard
         parent::delete($options);
-        if(Cache::getStore() instanceof TaggableStore) {
+        if (Cache::getStore() instanceof TaggableStore) {
             Cache::tags(Config::get('entrust.role_user_table'))->flush();
         }
     }
     public function restore()
     {   //soft delete undo's
         parent::restore();
-        if(Cache::getStore() instanceof TaggableStore) {
+        if (Cache::getStore() instanceof TaggableStore) {
             Cache::tags(Config::get('entrust.role_user_table'))->flush();
         }
     }
-
+    
     /**
      * Many-to-Many relations with Role.
      *
@@ -280,7 +278,7 @@ trait EntrustUserTrait
     public function detachRoles($roles=null)
     {
         if (!$roles) $roles = $this->roles()->get();
-
+        
         foreach ($roles as $role) {
             $this->detachRole($role);
         }
