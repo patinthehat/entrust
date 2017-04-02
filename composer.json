@@ -1,6 +1,6 @@
 {
-    "name": "zizaco/entrust",
-    "description": "This package provides a flexible way to add Role-based Permissions to Laravel",
+    "name": "patinthehat/entrust",
+    "description": "This package provides a flexible way to add Role-based Permissions to Laravel. Fork of original with Laravel 5.4+ support and more.",
     "keywords": ["laravel","illuminate","auth","roles","acl","permission"],
     "license": "MIT",
     "authors": [
