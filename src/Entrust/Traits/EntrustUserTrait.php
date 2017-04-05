@@ -22,7 +22,7 @@ trait EntrustUserTrait
         $cacheKey = 'entrust_roles_for_user_'.$this->$userPrimaryKey;
         //return Cache::tags(Config::get('entrust.role_user_table'))->remember($cacheKey, Config::get('cache.ttl'), function () {
         return Cache::remember($cacheKey, Config::get('entrust.cache_ttl'), function () {
-            return $this->roles()->get();
+            return $this->roles;
         });
     }
     public function save(array $options = [])
@@ -30,6 +30,8 @@ trait EntrustUserTrait
         parent::save($options);
         if (Cache::getStore() instanceof TaggableStore) {
             Cache::tags(Config::get('entrust.role_user_table'))->flush();
+        } else {
+            Cache::flush();
         }
     }
     public function delete(array $options = [])
@@ -37,6 +39,8 @@ trait EntrustUserTrait
         parent::delete($options);
         if (Cache::getStore() instanceof TaggableStore) {
             Cache::tags(Config::get('entrust.role_user_table'))->flush();
+        } else {
+            Cache::flush();
         }
     }
     public function restore()
@@ -44,6 +48,8 @@ trait EntrustUserTrait
         parent::restore();
         if (Cache::getStore() instanceof TaggableStore) {
             Cache::tags(Config::get('entrust.role_user_table'))->flush();
+        } else {
+            Cache::flush();
         }
     }
     
